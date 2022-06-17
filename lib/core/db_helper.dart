@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unused_local_variable, constant_identifier_names
 
 import 'dart:io';
 
@@ -21,6 +21,7 @@ class Databasehelper {
   static const columnemail = "email";
   static const columnupdatedat = "updatedAt";
   static const columnBio = "bio";
+  static const columnFavourite = "favourite";
 
   Database? _database;
 
@@ -39,7 +40,7 @@ class Databasehelper {
 
   Future oncreat(Database db, int version) async {
     await db.execute('''
-CREATE TABLE $tablename($columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnuserId TEXT, $columnfirstName TEXT, $columnlastName TEXT, $columnemail TEXT, $columncreatedAt TEXT, $columnupdatedat TEXT, $columnBio TEXT)
+CREATE TABLE $tablename($columnId PRIMARY KEY , $columnfirstName TEXT, $columnlastName TEXT, $columnemail TEXT, $columncreatedAt TEXT, $columnupdatedat TEXT, $columnBio TEXT, $columnFavourite INTEGER)
 ''');
   }
 
@@ -61,7 +62,8 @@ CREATE TABLE $tablename($columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnuser
 
   Future update(User usermodel) async {
     final db = await database;
-    return await db.update(tablename, {columnBio: usermodel.bio},
+    return await db.update(tablename,
+        {columnBio: usermodel.bio, columnFavourite: usermodel.favourite},
         where: "$columnId=?", whereArgs: [usermodel.id]);
   }
 
@@ -76,14 +78,14 @@ CREATE TABLE $tablename($columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnuser
 
     var tempList = List.generate(maps.length, (i) {
       return User(
-        id: maps[i][columnId],
-        createdAt: maps[i][columncreatedAt],
-        firstName: maps[i][columnfirstName],
-        lastName: maps[i][columnlastName],
-        email: maps[i][columnemail],
-        updatedAt: maps[i][columnupdatedat],
-        bio: maps[i][columnBio],
-      );
+          id: maps[i][columnId],
+          createdAt: maps[i][columncreatedAt],
+          firstName: maps[i][columnfirstName],
+          lastName: maps[i][columnlastName],
+          email: maps[i][columnemail],
+          updatedAt: maps[i][columnupdatedat],
+          bio: maps[i][columnBio],
+          favourite: maps[i][columnFavourite]);
     });
     print(tempList);
 

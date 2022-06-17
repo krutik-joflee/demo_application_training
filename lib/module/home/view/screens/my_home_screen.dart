@@ -11,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyHomeScreen extends StatefulWidget {
-  const MyHomeScreen({Key? key}) : super(key: key);
+  const MyHomeScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<MyHomeScreen> createState() => _MyHomeScreenState();
@@ -77,10 +79,14 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                 child: TextField(
                   decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.search),
+                      suffixIcon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                      ),
                       hintText: "Search",
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none),
+                  cursorColor: Colors.black,
                 ),
               )),
           backgroundColor: Colors.grey[400],
@@ -97,66 +103,44 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 : ListView.separated(
                     itemCount: homeScreenController.listOfUser.length,
                     itemBuilder: (context, index) {
+                      final isFav =
+                          homeScreenController.listOfUser[index].favourite == 0;
+
                       return Column(
                         children: [
-                          Container(
-                            height: 80,
-                            decoration: BoxDecoration(color: Colors.grey[100]),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: ListTile(
-                                trailing: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Builder(builder: (context) {
-                                    bool isFav = false;
-                                    return StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return Material(
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              isFav = !isFav;
-                                            });
-                                          },
-                                          child: Icon(Icons.star,
-                                              color: isFav
-                                                  ? Colors.yellow[700]
-                                                  : Colors.grey[400]),
-                                        ),
-                                      );
-                                    });
-                                  }),
-                                ),
-                                leading: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                UserProfileScreen(
-                                                  user: homeScreenController
-                                                      .listOfUser[index],
-                                                )));
-                                  },
-                                  child: CircleAvatar(
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UserProfileScreen(
+                                            user: homeScreenController
+                                                .listOfUser[index],
+                                          )));
+                            },
+                            child: Container(
+                              height: 80,
+                              decoration:
+                                  BoxDecoration(color: Colors.grey[100]),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 5, right: 5),
+                                child: ListTile(
+                                  trailing: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.star,
+                                        color: isFav
+                                            ? Colors.yellow[700]
+                                            : Colors.grey[400],
+                                      )),
+                                  leading: CircleAvatar(
                                     radius: 25,
                                     backgroundImage: NetworkImage(
                                       'https://img.freepik.com/free-photo/tall-trees-forest-mountains-covered-with-fog_181624-11289.jpg?size=626&ext=jpg',
                                     ),
                                   ),
-                                ),
-                                title: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                UserProfileScreen(
-                                                  user: homeScreenController
-                                                      .listOfUser[index],
-                                                )));
-                                  },
-                                  child: Text(
+                                  title: Text(
                                     (homeScreenController
                                                 .listOfUser[index].firstName ??
                                             '') +
@@ -167,12 +151,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
+                                  subtitle: Text(
+                                      homeScreenController
+                                          .listOfUser[index].email
+                                          .toString(),
+                                      maxLines: 1),
                                 ),
-                                subtitle: Text(
-                                    homeScreenController
-                                            .listOfUser[index].email ??
-                                        '',
-                                    maxLines: 1),
                               ),
                             ),
                           ),

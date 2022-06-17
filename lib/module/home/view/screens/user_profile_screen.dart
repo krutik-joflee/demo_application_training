@@ -1,9 +1,12 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, sort_child_properties_last, unnecessary_null_comparison, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, sort_child_properties_last, unnecessary_null_comparison, unused_local_variable, use_build_context_synchronously
 
 import 'package:demo_application/core/db_helper.dart';
+import 'package:demo_application/module/home/controller/user_profile_screen_controller.dart';
 import 'package:demo_application/module/home/view/widget/profile_data_view_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../controller/home_screen_controller.dart';
 import '../../model/user_model.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -18,21 +21,19 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  UserProfileScreenController userProfileScreenController =
+      Get.put(UserProfileScreenController());
+  HomeScreenController homeScreenController = Get.find();
+
   final dbhelper = Databasehelper();
+  bool isFav = false;
 
   TextEditingController biocontroller = TextEditingController();
   @override
   void initState() {
-    if (widget.user != null) {
-      biocontroller.text = widget.user.bio ?? "";
-    } else {
-      biocontroller.text = "";
-    }
+    biocontroller.text = widget.user.bio ?? "";
+    isFav = widget.user.favourite == 0;
     super.initState();
-  }
-
-  Future<void> insertdata({required String bio}) async {
-    Map<String, dynamic> userData = {Databasehelper.columnBio: bio};
   }
 
   @override
@@ -42,11 +43,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           elevation: 0,
           actions: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Icon(
-                Icons.star,
-                color: Colors.yellow[700],
-              ),
+              padding: const EdgeInsets.only(right: 20),
+              child: Builder(builder: (context) {
+                return StatefulBuilder(builder: (context, setState) {
+                  return Material(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isFav = !isFav;
+                        });
+                      },
+                      child: Icon(Icons.star,
+                          color: isFav ? Colors.yellow[700] : Colors.grey[400]),
+                    ),
+                  );
+                });
+              }),
             )
           ],
           backgroundColor: Colors.white,
@@ -110,12 +122,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 20, left: 25, right: 25),
               child: InkWell(
-                onTap: () {
-                  if (widget.user != null) {
-                    dbhelper.update(widget.user..bio = biocontroller.text);
-                  } else {
-                    insertdata(bio: biocontroller.text);
-                  }
+                onTap: () async {
+                  await userProfileScreenController.insertdata(
+                      id: widget.user.id ?? "",
+                      bio: biocontroller.text,
+                      favourite: isFav == true ? 0 : 1);
+                  homeScreenController.getUserData();
                   Navigator.pop(context);
                 },
                 child: Container(

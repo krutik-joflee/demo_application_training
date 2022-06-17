@@ -31,24 +31,28 @@ class User {
     this.lastName,
     this.updatedAt,
     this.bio,
+    this.favourite,
   });
 
-  int? id;
+  String? id;
   String? createdAt;
   String? email;
   String? firstName;
   String? lastName;
   String? updatedAt;
   String? bio;
+  int? favourite;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-      id: json["id"],
-      createdAt: json["created_at"].toString(),
-      email: json["email"],
-      firstName: json["first_name"],
-      lastName: json["last_name"],
-      updatedAt: json["updated_at"].toString(),
-      bio: json["bio"]);
+        id: json["id"],
+        createdAt: json["created_at"].toString(),
+        email: json["email"],
+        firstName: json["first_name"],
+        lastName: json["last_name"],
+        updatedAt: json["updated_at"].toString(),
+        bio: json["bio"],
+        favourite: json["favourite"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -57,6 +61,7 @@ class User {
         "first_name": firstName,
         "last_name": lastName,
         "updated_at": updatedAt,
-        "bio": bio
+        "bio": bio,
+        "favourite": favourite,
       };
 }

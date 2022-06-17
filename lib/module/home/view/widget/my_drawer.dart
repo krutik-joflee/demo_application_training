@@ -1,10 +1,19 @@
 import 'package:demo_application/module/home/view/screens/favourite_screen.dart';
-import 'package:demo_application/module/home/view/screens/my_home_screen.dart';
 import 'package:flutter/material.dart';
 
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key}) : super(key: key);
+import '../../../../core/db_helper.dart';
 
+class MyDrawer extends StatefulWidget {
+  const MyDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<MyDrawer> createState() => _MyDrawerState();
+}
+
+class _MyDrawerState extends State<MyDrawer> {
+  final dbhelper = Databasehelper();
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -57,17 +66,22 @@ class MyDrawer extends StatelessWidget {
         const Spacer(),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Padding(
-              padding: EdgeInsets.only(bottom: 40),
-              child: Text(
-                "Clear data",
-                style: TextStyle(
-                  shadows: [Shadow(color: Colors.red, offset: Offset(0, -3))],
-                  color: Colors.transparent,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.red,
-                  decorationThickness: 1,
+              padding: const EdgeInsets.only(bottom: 40),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {});
+                },
+                child: const Text(
+                  "Clear data",
+                  style: TextStyle(
+                    shadows: [Shadow(color: Colors.red, offset: Offset(0, -3))],
+                    color: Colors.transparent,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.red,
+                    decorationThickness: 1,
+                  ),
                 ),
               ),
             ),
