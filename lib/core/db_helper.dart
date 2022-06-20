@@ -1,11 +1,10 @@
 // ignore_for_file: avoid_print, unused_local_variable, constant_identifier_names
 
 import 'dart:io';
-
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../module/home/model/user_model.dart';
 
 class Databasehelper {
@@ -67,9 +66,19 @@ CREATE TABLE $tablename($columnId PRIMARY KEY , $columnfirstName TEXT, $columnla
         where: "$columnId=?", whereArgs: [usermodel.id]);
   }
 
-  Future delete(int id) async {
+  Future clearAllData() async {
     final db = await database;
-    return await db.delete(tablename, where: columnId, whereArgs: [id]);
+    return await db.delete(tablename);
+  }
+
+  // "SELECT * FROM $tablename WHERE $columnfirstName LIKE '%$value%'OR $columnlastName LIKE '%$value%'"
+
+  Future search(String value) async {
+    final db = await database;
+    var result = await db.rawQuery(
+        " SELECT * FROM $tablename WHERE $columnfirstName LIKE '%$value%' OR $columnlastName LIKE '%$value%'");
+    List<User> list =
+        result.isNotEmpty ? result.map((e) => User.fromJson(e)).toList() : [];
   }
 
   Future<List<User>> getAllRecordFromDB() async {

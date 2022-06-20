@@ -15,7 +15,6 @@ abstract class ApiServices {
       List<User> listOfUser =
           welcomeFromJson(jsonEncode(response.data)).users ?? [];
       await dbhelper.insertAllUserToDB(listOfUser);
-      print(listOfUser);
     } catch (e, st) {
       log("Error in getall users", error: e, stackTrace: st);
       return;

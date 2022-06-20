@@ -29,6 +29,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   bool isFav = false;
 
   TextEditingController biocontroller = TextEditingController();
+
   @override
   void initState() {
     biocontroller.text = widget.user.bio ?? "";

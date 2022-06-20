@@ -8,6 +8,7 @@ import '../../../core/db_helper.dart';
 
 class HomeScreenController extends GetxController {
   RxList<User> listOfUser = <User>[].obs;
+
   RxBool isLoading = true.obs;
 
   final dbhelper = Databasehelper();

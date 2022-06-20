@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+
 import 'package:demo_application/module/home/view/screens/favourite_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
 import '../../../../core/db_helper.dart';
+import '../../controller/home_screen_controller.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({
@@ -14,6 +17,8 @@ class MyDrawer extends StatefulWidget {
 
 class _MyDrawerState extends State<MyDrawer> {
   final dbhelper = Databasehelper();
+  HomeScreenController homeScreenController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -22,7 +27,7 @@ class _MyDrawerState extends State<MyDrawer> {
         const Padding(
           padding: EdgeInsets.all(70.0),
           child: CircleAvatar(
-            radius: 50,
+            radius: 57,
             backgroundColor: Colors.transparent,
             backgroundImage: NetworkImage(
                 "https://img.freepik.com/free-photo/tall-trees-forest-mountains-covered-with-fog_181624-11289.jpg?size=626&ext=jpg"),
@@ -70,8 +75,36 @@ class _MyDrawerState extends State<MyDrawer> {
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: GestureDetector(
-                onTap: () {
-                  setState(() {});
+                onTap: () async {
+                  await showDialog(
+                      context: context,
+                      builder: (ok) => Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              content: Text(
+                                  "Are you sure, you want to clear all data?"),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Cancel")),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: ElevatedButton(
+                                      onPressed: () async {
+                                        await dbhelper.clearAllData();
+                                        homeScreenController.listOfUser.clear();
+                                        Navigator.pop(context);
+                                        setState(() {});
+                                      },
+                                      child: Text("Clear")),
+                                )
+                              ],
+                            ),
+                          ));
                 },
                 child: const Text(
                   "Clear data",
