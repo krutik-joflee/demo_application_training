@@ -26,7 +26,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   final dbhelper = Databasehelper();
 
   HomeScreenController homeScreenController = Get.put(HomeScreenController());
-  late String result;
+
+  _MyHomeScreenState();
   @override
   initState() {
     internetconnection = Connectivity()
@@ -87,7 +88,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                 child: TextField(
                   onChanged: (value) {
-                    dbhelper.search(value);
+                    homeScreenController.searchUser(value);
                   },
                   decoration: InputDecoration(
                       suffixIcon: Icon(
@@ -126,7 +127,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                         String lastName =
                             homeScreenController.listOfUser[index].lastName ??
                                 '';
-
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
