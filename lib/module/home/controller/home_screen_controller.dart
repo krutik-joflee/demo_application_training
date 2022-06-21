@@ -23,4 +23,12 @@ class HomeScreenController extends GetxController {
     }
     isLoading.value = false;
   }
+
+  Future<void> searchUser(String value) async {
+    if (value != '') {
+      listOfUser.value = await dbhelper.search(value);
+    } else {
+      listOfUser.value = await dbhelper.search('');
+    }
+  }
 }

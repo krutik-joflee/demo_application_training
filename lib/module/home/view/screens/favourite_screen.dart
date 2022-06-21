@@ -43,7 +43,6 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                       //LAST NAME
                       String lastName =
                           homeScreenController.listOfUser[index].lastName ?? '';
-
                       return isFav
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
