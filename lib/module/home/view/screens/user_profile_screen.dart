@@ -37,6 +37,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     super.initState();
   }
 
+// String firstname = widget.user.firstName ?? "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,13 +71,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           children: [
             Center(
               child: SizedBox(
-                height: 150,
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://img.freepik.com/free-photo/tall-trees-forest-mountains-covered-with-fog_181624-11289.jpg?size=626&ext=jpg"),
-                  radius: 60,
-                ),
-              ),
+                  height: 150,
+                  child: CircleAvatar(
+                    radius: 55,
+                    child: Text(
+                      "${widget.user.firstName![0]}${widget.user.lastName![0]}",
+                      style: TextStyle(color: Colors.white, fontSize: 25),
+                    ),
+                    backgroundColor: Colors.grey[800],
+                  )),
             ),
             Row(
               children: [
