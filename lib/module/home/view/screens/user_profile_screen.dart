@@ -37,27 +37,34 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     super.initState();
   }
 
-// String firstname = widget.user.firstName ?? "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () async {
+                await userProfileScreenController.insertdata(
+                    id: widget.user.id ?? "",
+                    bio: biocontroller.text,
+                    favourite: isFav == true ? 0 : 1);
+                homeScreenController.getUserData();
+                Navigator.pop(context, true);
+              },
+              icon: Icon(Icons.arrow_back_ios_rounded)),
           elevation: 0,
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: 10),
               child: Builder(builder: (context) {
                 return StatefulBuilder(builder: (context, setState) {
-                  return Material(
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          isFav = !isFav;
-                        });
-                      },
-                      child: Icon(Icons.star,
-                          color: isFav ? Colors.yellow[700] : Colors.grey[400]),
-                    ),
+                  return IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isFav = !isFav;
+                      });
+                    },
+                    icon: Icon(Icons.star,
+                        color: isFav ? Colors.yellow[700] : Colors.grey[400]),
                   );
                 });
               }),
@@ -66,91 +73,94 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           backgroundColor: Colors.white,
           iconTheme: const IconThemeData(color: Colors.black),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: SizedBox(
-                  height: 150,
-                  child: CircleAvatar(
-                    radius: 55,
-                    child: Text(
-                      "${widget.user.firstName![0]}${widget.user.lastName![0]}",
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    ),
-                    backgroundColor: Colors.grey[800],
-                  )),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                      padding: EdgeInsets.only(left: 30, top: 6),
-                      child: ProfileDataViewWidget(
-                        title: "First Name",
-                        value: widget.user.firstName ?? "",
-                      )),
-                ),
-                Expanded(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: SizedBox(
+                    height: 150,
+                    child: CircleAvatar(
+                      radius: 55,
+                      child: Text(
+                        "${widget.user.firstName![0]}${widget.user.lastName![0]}",
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                      backgroundColor: Colors.grey[800],
+                    )),
+              ),
+              Row(
+                children: [
+                  Expanded(
                     child: Padding(
-                        padding: EdgeInsets.only(top: 6, left: 5),
+                        padding: EdgeInsets.only(left: 30, top: 6),
                         child: ProfileDataViewWidget(
-                          title: 'Last Name',
-                          value: widget.user.lastName ?? '',
-                        )))
-              ],
-            ),
-            Padding(
-                padding: const EdgeInsets.only(left: 30, top: 30),
-                child: ProfileDataViewWidget(
-                  title: 'Email',
-                  value: widget.user.email ?? '',
-                )),
-            Padding(
-              padding: const EdgeInsets.only(top: 30, left: 25, right: 25),
-              child: Card(
-                child: TextFormField(
-                  controller: biocontroller,
-                  decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      labelText: 'Bio',
-                      labelStyle: TextStyle(color: Colors.black)),
-                  cursorColor: Colors.black,
+                          title: "First Name",
+                          value: widget.user.firstName ?? "",
+                        )),
+                  ),
+                  Expanded(
+                      child: Padding(
+                          padding: EdgeInsets.only(top: 6, left: 5),
+                          child: ProfileDataViewWidget(
+                            title: 'Last Name',
+                            value: widget.user.lastName ?? '',
+                          )))
+                ],
+              ),
+              Padding(
+                  padding: const EdgeInsets.only(left: 30, top: 30),
+                  child: ProfileDataViewWidget(
+                    title: 'Email',
+                    value: widget.user.email ?? '',
+                  )),
+              Padding(
+                padding: const EdgeInsets.only(top: 30, left: 25, right: 25),
+                child: Card(
+                  child: TextFormField(
+                    maxLines: 3,
+                    controller: biocontroller,
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black)),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black)),
+                        labelText: 'Bio',
+                        labelStyle: TextStyle(color: Colors.black)),
+                    cursorColor: Colors.black,
+                  ),
                 ),
               ),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20, left: 25, right: 25),
-              child: InkWell(
-                onTap: () async {
-                  await userProfileScreenController.insertdata(
-                      id: widget.user.id ?? "",
-                      bio: biocontroller.text,
-                      favourite: isFav == true ? 0 : 1);
-                  homeScreenController.getUserData();
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  child: Center(
-                    child: Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+              Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 20, left: 25, right: 25, top: 210),
+                child: InkWell(
+                  onTap: () async {
+                    await userProfileScreenController.insertdata(
+                        id: widget.user.id ?? "",
+                        bio: biocontroller.text,
+                        favourite: isFav == true ? 0 : 1);
+                    homeScreenController.getUserData();
+                    Navigator.pop(context, true);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: Center(
+                      child: Text(
+                        "Save",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: Colors.black,
                     ),
                   ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: Colors.black,
-                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ));
   }
 }

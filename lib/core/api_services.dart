@@ -6,12 +6,15 @@ import 'package:dio/dio.dart';
 import 'db_helper.dart';
 
 abstract class ApiServices {
-  static Future<void> getHttp() async {
+  static Future<void> getHttp(int listlength) async {
     final dbhelper = Databasehelper();
 
     try {
-      var response = await Dio()
-          .get('https://verified-mammal-79.hasura.app/api/rest/users/0');
+      var response = await Dio().get(
+          'https://verified-mammal-79.hasura.app/api/rest/users',
+          queryParameters: {
+            "since": listlength,
+          });
       List<User> listOfUser =
           welcomeFromJson(jsonEncode(response.data)).users ?? [];
       await dbhelper.insertAllUserToDB(listOfUser);

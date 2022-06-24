@@ -1,10 +1,13 @@
 // ignore_for_file: unnecessary_const, deprecated_member_use
 
+import 'package:demo_application/module/home/controller/home_screen_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class MyDialog extends StatelessWidget {
-  const MyDialog({Key? key}) : super(key: key);
-
+  MyDialog({Key? key}) : super(key: key);
+  HomeScreenController homeScreenController = Get.find();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

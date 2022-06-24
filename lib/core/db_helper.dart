@@ -80,6 +80,17 @@ CREATE TABLE $tablename($columnId PRIMARY KEY , $columnfirstName TEXT, $columnla
     return list;
   }
 
+  Future<List<User>> favouriteuser() async {
+    final db = await database;
+    var templist = await db
+        .rawQuery("SELECT * FROM $tablename WHERE $columnFavourite LIKE 0  ");
+    List<User> list = templist.isNotEmpty
+        ? templist.map((e) => User.fromJson(e)).toList()
+        : [];
+
+    return list;
+  }
+
   Future<List<User>> getAllRecordFromDB() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(tablename);

@@ -1,67 +1,81 @@
-// ignore_for_file: prefer_const_constructors, deprecated_member_use, invalid_use_of_protected_member, prefer_interpolation_to_compose_strings, unnecessary_this, recursive_getters
-
 import 'dart:async';
-import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:demo_application/core/db_helper.dart';
-import 'package:demo_application/module/home/controller/home_screen_controller.dart';
 import 'package:demo_application/module/home/view/screens/user_profile_screen.dart';
-import 'package:demo_application/module/home/view/widget/my_dailog.dart';
-import 'package:demo_application/module/home/view/widget/my_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../core/db_helper.dart';
+import '../../controller/home_screen_controller.dart';
+import '../widget/my_dailog.dart';
+import '../widget/my_drawer.dart';
 
 class MyHomeScreen extends StatefulWidget {
-  const MyHomeScreen({
-    Key? key,
-  }) : super(key: key);
-
+  const MyHomeScreen({Key? key}) : super(key: key);
   @override
   State<MyHomeScreen> createState() => _MyHomeScreenState();
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
-  late StreamSubscription internetconnection;
-  bool isoffline = false;
+  ConnectivityResult connectivityResult = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   final dbhelper = Databasehelper();
-
   HomeScreenController homeScreenController = Get.put(HomeScreenController());
 
-  _MyHomeScreenState();
   @override
-  initState() {
-    internetconnection = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
-      if (result == ConnectivityResult.none) {
-        await showDialog(
-            context: context,
-            builder: (ctx) =>
-                Padding(padding: const EdgeInsets.all(15), child: MyDialog()));
-        setState(() {
-          isoffline = true;
-        });
-      } else if (result == ConnectivityResult.mobile) {
-        log("NETWORK STATUS :- MOBILE DATA CONNECTED");
-        setState(() {
-          isoffline = false;
-        });
-      } else if (result == ConnectivityResult.wifi) {
-        log("NETWORK STATUS :- WIFI CONNECTED");
-        setState(() {
-          isoffline = false;
-        });
-      }
-    });
-
+  void initState() {
+    initConnectivity();
     homeScreenController.getUserData();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
   }
 
   @override
-  dispose() {
+  void dispose() {
+    _connectivitySubscription.cancel();
     super.dispose();
-    internetconnection.cancel();
+  }
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      var developer;
+      developer.log('Couldn\'t check connectivity status', error: e);
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+    return _updateConnectionStatus(result);
+  }
+
+  RxBool isLoading = true.obs;
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(
+      () {
+        connectivityResult = result;
+        if (ConnectivityResult.none == result) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return MyDialog();
+            },
+          );
+          print("DATA NOT CONNECTED");
+        } else if (ConnectivityResult.wifi == result ||
+            ConnectivityResult.mobile == result) {
+          setState(() {
+            isLoading.value = true;
+            homeScreenController.getUserData();
+            isLoading.value = false;
+            print("WIFI CONNECTED");
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -87,10 +101,11 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                 child: TextField(
+                  controller: homeScreenController.serchcontroller,
                   onChanged: (value) {
                     homeScreenController.searchUser(value);
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       suffixIcon: Icon(
                         Icons.search,
                         color: Colors.black,
@@ -102,18 +117,19 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 ),
               )),
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: Obx(
           () => homeScreenController.isLoading.value
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : homeScreenController.listOfUser.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text('NO USER FOUND'),
                     )
                   : ListView.separated(
+                      controller: homeScreenController.scrollController,
                       itemCount: homeScreenController.listOfUser.length,
                       itemBuilder: (context, index) {
                         final isFav =
@@ -167,7 +183,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                       ),
                                     ),
                                     title: Text(
-                                      (firstName) + " " + (lastName),
+                                      "$firstName $lastName",
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
